@@ -10,10 +10,10 @@ import (
 
 // Define DbDbMysqlAccess
 const S_mysqlDriverName = "mysql"
-type DbDbMysqlAccess struct{
+type DbMysqlAccess struct{
    xyDb.DbAccess
 }
-func (dba *DbDbMysqlAccess) InitDb(initPars map[string]string, dbStructure xyDb.DbStructure) (string, error) {
+func (dba *DbMysqlAccess) InitDb(initPars map[string]string, dbStructure xyDb.DbStructure) (string, error) {
    dba.SetDriverName(S_mysqlDriverName)
 
    adminConnectString, newDbConnectString := makeConnectString(initPars, dbStructure.DbName)
@@ -105,7 +105,7 @@ func makeConnectString(initPars map[string]string, dbName string) (string, strin
 
 	return adminConnectString, newDbConnectString
 }
-func (dba *DbDbMysqlAccess) SetConnect(connectString string) error {
+func (dba *DbMysqlAccess) SetConnect(connectString string) error {
    dba.SetDriverName(S_mysqlDriverName)
    return dba.DbAccess.SetConnect(connectString)
 }
