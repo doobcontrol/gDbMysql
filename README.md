@@ -1,0 +1,1 @@
+# IDbAccess interface implement for Mysql
