@@ -14,7 +14,7 @@ const S_mysqlDriverName = "mysql"
 type DbMysqlAccess struct{
    xyDb.DbAccess
 }
-func (dba *DbMysqlAccess) InitDb(initPars map[string]string, dbStructure xyDb.DbStructure) (string, error) {
+func (dba *DbMysqlAccess) InitDb(initPars *map[string]string, dbStructure xyDb.DbStructure) (string, error) {
     dba.SetDriverName(S_mysqlDriverName)
 
    	adminConnectString, newDbConnectString := makeConnectString(initPars, dbStructure.DbName)
@@ -28,13 +28,13 @@ func (dba *DbMysqlAccess) InitDb(initPars map[string]string, dbStructure xyDb.Db
    	dbBuilder.WriteString(fmt.Sprintf("CREATE DATABASE %s;", dbStructure.DbName))
    	dbBuilder.WriteString(fmt.Sprintf(
 	"CREATE USER '%s'@'localhost' IDENTIFIED BY '%s';", 
-	initPars[S_newName],
-	initPars[S_newPass],
+	(*initPars)[S_newName],
+	(*initPars)[S_newPass],
 	))
     dbBuilder.WriteString(fmt.Sprintf(
 	"GRANT ALL PRIVILEGES ON %s.* TO '%s'@'localhost';", 
 	dbStructure.DbName,
-	initPars[S_newName],
+	(*initPars)[S_newName],
 	))
 	dbBuilder.WriteString("FLUSH PRIVILEGES;")
 
@@ -70,18 +70,18 @@ const S_newPass = "newPass" //the new user's password for new dbname
 const S_protocol = "protocol"
 const S_address = "address"
 const S_params = "params"
-func makeConnectString(initPars map[string]string, dbName string) (string, string) {
-	var username = initPars[S_adminName]
-	var password = url.PathEscape(initPars[S_adminPass])
+func makeConnectString(initPars *map[string]string, dbName string) (string, string) {
+	var username = (*initPars)[S_adminName]
+	var password = url.PathEscape((*initPars)[S_adminPass])
 	var protocol = "tcp"
-	var address = initPars[S_address]
+	var address = (*initPars)[S_address]
 	var dbname = "mysql"
 	var params = ""
 
-	if value, ok := initPars[S_protocol]; ok {
+	if value, ok := (*initPars)[S_protocol]; ok {
 		protocol = value
 	}
-	if value, ok := initPars[S_params]; ok {
+	if value, ok := (*initPars)[S_params]; ok {
 		params = "?" + value
 	}
 
@@ -95,8 +95,8 @@ func makeConnectString(initPars map[string]string, dbName string) (string, strin
 		params,
 	)
 
-	username = initPars[S_newName]
-	password = url.PathEscape(initPars[S_newPass])
+	username = (*initPars)[S_newName]
+	password = url.PathEscape((*initPars)[S_newPass])
 	dbname = dbName
 	newDbConnectString := fmt.Sprintf(
 		"%s:%s@%s(%s)/%s%s", 
